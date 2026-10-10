@@ -1,0 +1,769 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angelwood High School</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --texto: #f0f2f2;
+      --borde: rgba(220, 232, 236, 0.65);
+      --caja: rgba(8, 16, 25, 0.90);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--texto);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 20px;
+      overflow-x: hidden;
+      background:
+        radial-gradient(
+          ellipse at 50% 24%,
+          rgba(210, 219, 220, 0.72),
+          transparent 66%
+        ),
+        linear-gradient(
+          180deg,
+          #8197a0 0%,
+          #718794 32%,
+          #4a6372 67%,
+          #1c2a38 100%
+        );
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: linear-gradient(
+        180deg,
+        transparent 40%,
+        rgba(5, 12, 20, 0.48) 100%
+      );
+    }
+
+   
+    /* FONDO DE LA HISTORIA */
+    #fondoEscena {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0;
+      background-color: #283945;
+      background-image:
+        linear-gradient(
+          rgba(19, 31, 43, 0.22),
+          rgba(10, 18, 28, 0.52)
+        ),
+        url("images/grimmingford.jpeg");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      transition: opacity 1.2s ease;
+      pointer-events: none;
+    }
+
+    #fondoEscena.visible {
+      opacity: 1;
+    }
+
+    /* TRANSICIÓN */
+    #transicionNegra {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: #000;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity 1.2s ease,
+        visibility 0s linear 1.2s;
+    }
+
+    #transicionNegra.activo {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 1.2s ease;
+    }
+
+    /* PANTALLA PRINCIPAL */
+    .pantalla {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      width: 100%;
+      padding: 145px 4% 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      text-align: center;
+    }
+
+    h1 {
+      position: absolute;
+      top: 28px;
+      left: 0;
+      width: 100%;
+      margin: 0;
+      padding: 0 12px;
+      font-family: "Cinzel", serif;
+      font-size: clamp(1.7rem, 4vw, 3rem);
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      line-height: 1.4;
+      color: #f3f5f4;
+      text-shadow: 0 3px 18px rgba(5, 12, 20, 0.7);
+    }
+
+    .subtitulo {
+      margin-top: 5px;
+      font-size: 1.3rem;
+      font-style: italic;
+      letter-spacing: 0.06em;
+      text-shadow: 0 2px 12px rgba(5, 12, 20, 0.6);
+    }
+
+    #inicio {
+      width: 100%;
+      max-width: 850px;
+      margin: auto 0 0;
+      padding-top: 35px;
+      text-shadow: 0 2px 12px rgba(5, 12, 20, 0.65);
+      animation: aparecerInicio 1.2s ease both;
+    }
+
+    #inicio p {
+      margin: 12px auto;
+      line-height: 1.6;
+    }
+
+    /* FORMULARIO INICIAL */
+    #introduccion {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1100px;
+      margin: auto 0 0;
+      padding: 18px 26px;
+      text-align: left;
+      background: var(--caja);
+      border: 1px solid var(--borde);
+      border-radius: 2px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    #introduccion h2 {
+      margin: 0 0 8px;
+      font-family: "Cinzel", serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    #introduccion p {
+      margin: 6px 0 10px;
+      line-height: 1.4;
+    }
+
+    #introduccion label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input,
+    textarea {
+      display: block;
+      width: 100%;
+      max-width: 500px;
+      margin: 6px 0 10px;
+      padding: 10px 12px;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.1rem;
+      color: #fff;
+      background: rgba(5, 13, 21, 0.85);
+      border: 1px solid rgba(208, 224, 229, 0.52);
+      border-radius: 1px;
+    }
+
+    textarea {
+      min-height: 65px;
+      resize: vertical;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #bac8ce;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: 1px solid #eef5f6;
+      outline-offset: 2px;
+    }
+
+    /* BOTONES */
+    button {
+      position: relative;
+      z-index: 2;
+      margin: 12px 0 0;
+      padding: 12px 23px;
+      font-family: "Cinzel", serif;
+      font-size: 0.76rem;
+      letter-spacing: 0.09em;
+      color: #f2f5f5;
+      background: rgba(104, 128, 141, 0.3);
+      border: 1px solid rgba(220, 232, 235, 0.7);
+      border-radius: 1px;
+      cursor: pointer;
+      transition:
+        background 0.3s ease,
+        transform 0.3s ease;
+    }
+
+    button:hover {
+      background: rgba(185, 207, 215, 0.2);
+      transform: translateY(-2px);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    #mensaje {
+      color: #f4d6d6;
+    }
+
+    /* CAJA DE DIÁLOGO */
+    #escena {
+      width: 100%;
+      margin: auto 0 0;
+      text-align: left;
+      animation: aparecerCaja 0.7s ease both;
+    }
+
+    #dialogo {
+      position: relative;
+      width: 100%;
+      min-height: 125px;
+      padding: 16px 24px 32px;
+      color: var(--texto);
+      background: var(--caja);
+      border: 1px solid var(--borde);
+      border-radius: 2px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      outline-offset: 4px;
+    }
+
+    #nombrePersonaje {
+      margin-bottom: 8px;
+      font-family: "Cinzel", serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      color: #d5e2e7;
+    }
+
+    #textoDialogo {
+      min-height: 2.7em;
+      margin: 0;
+      font-size: 1.25rem;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    #textoDialogo strong {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    #indicadorDialogo {
+      position: absolute;
+      right: 17px;
+      bottom: 7px;
+      font-size: 0.85rem;
+      animation: pulsarIndicador 1s ease-in-out infinite;
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-family: "Cinzel", serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      color: #d0dcdf;
+      text-align: center;
+    }
+
+    .oculto {
+      display: none !important;
+    }
+
+    @keyframes aparecerCaja {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes aparecerInicio {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes pulsarIndicador {
+      0%, 100% {
+        opacity: 0.35;
+        transform: translateY(0);
+      }
+      50% {
+        opacity: 1;
+        transform: translateY(3px);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .pantalla {
+        padding: 120px 14px 18px;
+      }
+
+      h1 {
+        top: 25px;
+        font-size: 1.6rem;
+        letter-spacing: 0.07em;
+      }
+
+      .subtitulo {
+        font-size: 1.1rem;
+      }
+
+      #introduccion {
+        padding: 14px 15px;
+      }
+
+      #dialogo {
+        padding: 14px 16px 30px;
+      }
+
+      #textoDialogo {
+        font-size: 1.1rem;
+      }
+
+      button {
+        padding: 12px 16px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="fondoEscena" aria-hidden="true"></div>
+  <div id="transicionNegra" aria-hidden="true"></div>
+
+  <main class="pantalla">
+    <div class="subtitulo">Una novela visual sobrenatural</div>
+
+    <h1>Angelwood<br>High School</h1>
+
+    <!-- PANTALLA DE INICIO -->
+    <section id="inicio">
+      <p>
+        Grimmingford, California<br>
+        Una nueva historia está a punto de comenzar...
+      </p>
+
+      <button id="comenzar" type="button">
+        Comenzar historia ✦
+      </button>
+    </section>
+
+    <!-- PERSONALIZACIÓN DE LA PROTAGONISTA -->
+    <section id="introduccion" class="oculto">
+      <h2>Antes de comenzar...</h2>
+
+      <label for="nombre">
+        ¿Cómo se llama la protagonista?
+      </label>
+
+      <input
+        id="nombre"
+        type="text"
+        placeholder="Escribe su nombre"
+        maxlength="40"
+        autocomplete="off"
+      >
+
+      <label for="gustos">
+        ¿Qué cosas le gustan?
+      </label>
+
+      <textarea
+        id="gustos"
+        placeholder="Escribe sus gustos"
+        maxlength="300"
+      ></textarea>
+
+      <button id="continuar" type="button">
+        Continuar →
+      </button>
+
+      <p id="mensaje" aria-live="polite"></p>
+    </section>
+
+    <!-- ESCENA Y DIÁLOGOS -->
+    <section id="escena" class="oculto" aria-live="polite">
+      <div
+        id="dialogo"
+        role="button"
+        tabindex="0"
+        aria-label="Continuar diálogo"
+      >
+        <div id="nombrePersonaje">NARRACIÓN</div>
+        <p id="textoDialogo"></p>
+        <div id="indicadorDialogo">▼</div>
+      </div>
+    </section>
+
+    <div class="footer">
+      GRIMMINGFORD · CALIFORNIA
+    </div>
+  </main>
+
+  <script>
+    // ELEMENTOS DE LA PÁGINA
+    const pantallaInicio = document.getElementById("inicio");
+    const introduccion = document.getElementById("introduccion");
+    const campoNombre = document.getElementById("nombre");
+    const campoGustos = document.getElementById("gustos");
+    const mensaje = document.getElementById("mensaje");
+    const botonContinuar = document.getElementById("continuar");
+
+    const escena = document.getElementById("escena");
+    const nombrePersonaje = document.getElementById("nombrePersonaje");
+    const textoDialogo = document.getElementById("textoDialogo");
+    const indicadorDialogo = document.getElementById("indicadorDialogo");
+    const cajaDialogo = document.getElementById("dialogo");
+
+    const fondoEscena = document.getElementById("fondoEscena");
+    const transicionNegra = document.getElementById("transicionNegra");
+
+    // VARIABLES DEL JUEGO
+    let indiceDialogo = 0;
+    let indiceLetra = 0;
+    let temporizadorDialogo = null;
+    let escribiendo = false;
+    let transicionEnCurso = false;
+    let nombreJugadora = "";
+    let dialogos = [];
+
+    
+    // CAMBIAR EL FONDO CON UNA TRANSICIÓN NEGRA
+    function cambiarFondoYSiguienteDialogo() {
+      transicionEnCurso = true;
+      transicionNegra.classList.add("activo");
+
+      // Esperar a que la pantalla se vuelva negra
+      setTimeout(function() {
+        fondoEscena.style.backgroundImage = `
+          linear-gradient(
+            rgba(19, 31, 43, 0.22),
+            rgba(10, 18, 28, 0.52)
+          ),
+          url("images/sala.jpeg")
+        `;
+
+        // Preparar el siguiente diálogo mientras la pantalla está negra
+        mostrarDialogo();
+
+        // Dejar que el fondo cambie antes de mostrarlo
+        setTimeout(function() {
+          transicionNegra.classList.remove("activo");
+
+          setTimeout(function() {
+            transicionEnCurso = false;
+          }, 1300);
+        }, 100);
+      }, 1300);
+    }
+
+
+    // VARIABLES DEL EFECTO DE TEXTO
+    let partesTextoActual = [];
+    let totalLetras = 0;
+
+    // LIMPIAR LOS MARCADORES DE NEGRITA
+    // QUE PUDIERA ESCRIBIR EL JUGADOR
+    function limpiarTextoJugador(texto) {
+      return texto.replace(/\*\*/g, "");
+    }
+
+    // BOTÓN DE INICIO
+    document.getElementById("comenzar").addEventListener("click", function() {
+      pantallaInicio.classList.add("oculto");
+      introduccion.classList.remove("oculto");
+      campoNombre.focus();
+    });
+
+    // SEPARAR TEXTO NORMAL Y NEGRITA
+    function separarFormato(texto) {
+      const partes = [];
+      const regex = /\*\*(.*?)\*\*/g;
+      let ultimo = 0;
+      let coincidencia;
+
+      while ((coincidencia = regex.exec(texto)) !== null) {
+        if (coincidencia.index > ultimo) {
+          partes.push({
+            texto: texto.slice(ultimo, coincidencia.index),
+            negrita: false
+          });
+        }
+
+        partes.push({
+          texto: coincidencia[1],
+          negrita: true
+        });
+
+        ultimo = regex.lastIndex;
+      }
+
+      if (ultimo < texto.length) {
+        partes.push({
+          texto: texto.slice(ultimo),
+          negrita: false
+        });
+      }
+
+      return partes;
+    }
+
+    // DIBUJAR TEXTO DE FORMA SEGURA
+    function dibujarTextoParcial(partes, cantidad) {
+      textoDialogo.replaceChildren();
+
+      let restantes = cantidad;
+
+      for (const parte of partes) {
+        const visible = parte.texto.slice(
+          0,
+          Math.max(0, Math.min(parte.texto.length, restantes))
+        );
+
+        if (visible.length > 0) {
+          const nodoTexto = document.createTextNode(visible);
+
+          if (parte.negrita) {
+            const negrita = document.createElement("strong");
+            negrita.appendChild(nodoTexto);
+            textoDialogo.appendChild(negrita);
+          } else {
+            textoDialogo.appendChild(nodoTexto);
+          }
+        }
+
+        restantes -= visible.length;
+
+        if (restantes <= 0) break;
+      }
+    }
+
+    // MUESTRA EL DIÁLOGO ACTUAL
+    function mostrarDialogo() {
+      clearTimeout(temporizadorDialogo);
+      temporizadorDialogo = null;
+
+      if (indiceDialogo >= dialogos.length) {
+        nombrePersonaje.textContent = "FIN DE LA ESCENA";
+        textoDialogo.textContent = "Fin de esta escena provisional.";
+        indicadorDialogo.textContent = "";
+        cajaDialogo.setAttribute("aria-label", "Fin de la escena");
+        escribiendo = false;
+        return;
+      }
+
+      const linea = dialogos[indiceDialogo];
+
+      nombrePersonaje.textContent = linea.personaje;
+      partesTextoActual = separarFormato(linea.texto);
+
+      totalLetras = partesTextoActual.reduce(
+        (total, parte) => total + parte.texto.length,
+        0
+      );
+
+      textoDialogo.replaceChildren();
+      indiceLetra = 0;
+      escribiendo = true;
+      indicadorDialogo.textContent = "▼";
+      cajaDialogo.setAttribute("aria-label", "Continuar diálogo");
+
+      escribirSiguienteLetra();
+    }
+
+    // EFECTO DE TEXTO PROGRESIVO
+    function escribirSiguienteLetra() {
+      if (indiceDialogo >= dialogos.length) return;
+
+      if (indiceLetra < totalLetras) {
+        indiceLetra++;
+
+        dibujarTextoParcial(partesTextoActual, indiceLetra);
+
+        temporizadorDialogo = setTimeout(
+          escribirSiguienteLetra,
+          30
+        );
+      } else {
+        escribiendo = false;
+        temporizadorDialogo = null;
+      }
+    }
+
+    
+    // AVANZAR O COMPLETAR EL TEXTO
+    function completarDialogo() {
+      if (transicionEnCurso) return;
+      if (indiceDialogo >= dialogos.length) return;
+
+      if (escribiendo) {
+        clearTimeout(temporizadorDialogo);
+        temporizadorDialogo = null;
+
+        indiceLetra = totalLetras;
+        dibujarTextoParcial(partesTextoActual, totalLetras);
+
+        escribiendo = false;
+        return;
+      }
+
+      indiceDialogo++;
+
+      // Antes del diálogo de entrada al aula, cambiar el fondo
+      if (indiceDialogo === 3) {
+        cambiarFondoYSiguienteDialogo();
+        return;
+      }
+
+      mostrarDialogo();
+    }
+
+
+    cajaDialogo.addEventListener("click", completarDialogo);
+
+    cajaDialogo.addEventListener("keydown", function(evento) {
+      if (evento.key === "Enter" || evento.key === " ") {
+        evento.preventDefault();
+        completarDialogo();
+      }
+    });
+
+    // BOTÓN CONTINUAR
+    botonContinuar.addEventListener("click", function() {
+      if (transicionEnCurso) return;
+
+      nombreJugadora = limpiarTextoJugador(
+        campoNombre.value.trim()
+      );
+
+      const gustos = limpiarTextoJugador(
+        campoGustos.value.trim()
+      );
+
+      const gustosJugadora = gustos || "aún por descubrir";
+
+      if (!nombreJugadora) {
+        mensaje.textContent =
+          "Escribe el nombre de la protagonista antes de continuar.";
+        campoNombre.focus();
+        return;
+      }
+
+      mensaje.textContent = "";
+
+      // DIÁLOGOS ESCRITOS PARA EL COMIENZO DE LA HISTORIA
+      dialogos = [
+        {
+          personaje: "NARRACIÓN",
+          texto: `Era un nuevo día para **${nombreJugadora}**, se había mudado con su padre y, por más que renegara, sabía que tendría que ir a la nueva escuela Angelwood High School. ¿El problema? Era nueva, y en esa escuela todos se conocían desde hacía un buen tiempo, así que ella terminaría siendo la chica atípica de la escuela.`
+        },
+        {
+          personaje: "NARRACIÓN",
+          texto: `El cielo gris cubría Grimmingford, California. Una fría brisa entraba levemente por la ventana del auto de su padre, que no parecía preocuparse por el frío que sentía **${nombreJugadora}**, pues en Grimmingford el frío era cosa de todos los días.`
+        },
+        {
+          personaje: "NARRACIÓN",
+          texto: "Había llegado el momento de comenzar en Angelwood High School."
+        },
+        {
+          personaje: "NARRACIÓN",
+          texto: "Al entrar en el aula, el profesor te saluda cordialmente y te pide que te presentes ante el resto de los estudiantes, cuyos ojos curiosos se vuelven hacia ti."
+        },
+        {
+          personaje: "NARRACIÓN",
+          texto: `Sin más remedio, tragas saliva y hablas: «Me llamo **${nombreJugadora}** y me gusta **${gustosJugadora}**».`
+        },
+        {
+          personaje: "NARRACIÓN",
+          texto: "Luego de ese inicio asqueroso para ti, te vas a sentar al fondo del aula, junto a un chico que parece raro: ropa elegante, peinado de los años 70... Parece no pertenecer a esta época."
+        }
+      ];
+
+      console.log("Nombre de la protagonista:", nombreJugadora);
+      console.log("Gustos de la protagonista:", gustosJugadora);
+
+      transicionEnCurso = true;
+      botonContinuar.disabled = true;
+
+      introduccion.classList.add("oculto");
+      transicionNegra.classList.add("activo");
+
+      setTimeout(function() {
+        fondoEscena.classList.add("visible");
+
+        setTimeout(function() {
+          transicionNegra.classList.remove("activo");
+
+          setTimeout(function() {
+            escena.classList.remove("oculto");
+            indiceDialogo = 0;
+            mostrarDialogo();
+
+            transicionEnCurso = false;
+          }, 1300);
+        }, 100);
+      }, 1300);
+    });
+  </script>
+</body>
+</html>
